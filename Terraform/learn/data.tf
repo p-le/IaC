@@ -13,5 +13,5 @@ data "aws_availability_zones" "available" {
 }
 
 data "template_file" "user_data" {
-  template = "init.tpl"
+  template = "${file("./init.tpl")}"
 }
