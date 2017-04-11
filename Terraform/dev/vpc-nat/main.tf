@@ -64,15 +64,16 @@ resource "aws_security_group" "nat" {
   #   cidr_block = "${var.private_subnet_cidr_block}"
   # }
 
-
-  # ingress {
-  #   from_port  = 22
-  #   to_port    = 22
-  #   protocol   = "tcp"
-  #   cidr_block = ["0.0.0.0/0"]
-  # }
-
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   depends_on = ["aws_subnet.public", "aws_subnet.private"]
+  tags {
+    Name = "terraform-nat-sg"
+  }
 }
 
 resource "aws_route_table" "public" {

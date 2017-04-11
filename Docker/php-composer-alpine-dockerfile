@@ -1,0 +1,9 @@
+FROM php:7.1.3-alpine
+
+RUN addgroup -S admage && adduser -S -g admage admage
+RUN apk --update add curl git && rm /var/cache/apk/*
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+ENTRYPOINT ["/bin/sh"]
+
+
