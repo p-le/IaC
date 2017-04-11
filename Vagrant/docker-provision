@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+  # config.vm.box_check_update = false
+
+  config.vm.network "private_network", ip: "192.168.27.12"
+
+  # config.vm.network "public_network"
+  
+  config.vm.synced_folder ".", "/shared"
+  config.vm.hostname = "docker"
+  
+  config.vm.provider "virtualbox" do |vb|
+	 vb.name = "docker"
+     vb.memory = "512"
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo yum install -y net-tools wget
+    sudo yum update -y
+    sudo yum install -y yum-utils
+    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    sudo yum makecache fast
+    sudo yum install docker-ce -y
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo chkconfig docker on
+    sudo usermod -aG docker $USER
+    sudo /sbin/sysctl -w net.ipv4.ip_forward=1
+    sudo setenforce 0
+    sudo yum install epel-release -y
+    sudo yum install -y python-pip
+    sudo pip install docker-compose
+    curl -L https://github.com/docker/machine/releases/download/v0.10.0/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine	 
+  SHELL
+end
