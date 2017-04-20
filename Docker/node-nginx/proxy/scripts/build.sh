@@ -1,0 +1,1 @@
+docker build -t my-nginx .  && docker rmi $(docker images -qf "dangling=true")

@@ -1,0 +1,1 @@
+docker run --rm -it -h nginx --name nginx -p 80:80 -p 443:443 --link node:node my-nginx

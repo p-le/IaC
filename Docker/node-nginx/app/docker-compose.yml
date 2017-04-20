@@ -1,0 +1,11 @@
+version: '2'
+services:
+  node:
+    image: 'my-node'
+  nginx: 
+    image: 'my-nginx'
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - node

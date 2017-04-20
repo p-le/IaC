@@ -1,0 +1,1 @@
+docker build -t my-node .  && docker rmi $(docker images -qf "dangling=true")
