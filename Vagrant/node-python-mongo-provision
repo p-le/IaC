@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+  config.vm.network "private_network", ip: "192.168.27.12"
+  config.vm.synced_folder "D:/Workspace/Node/", "/shared"
+  config.vm.hostname = "dev"
+  config.vm.provision "file", source: "./mongorepo", destination: "/etc/yum.repos.d/mongodb-org-3.4.repo"
+
+  config.vm.provider "virtualbox" do |vb|
+	 vb.name = "dev"
+     vb.memory = "512"
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo yum install -y gcc-c++ make
+    curl --silent --location https://rpm.nodesource.com/setup_7.x | sudo bash -
+    sudo yum -y install nodejs
+    sudo wget https://dl.yarnpkg.com/rpm/yarn.repo -O /etc/yum.repos.d/yarn.repo
+    sudo yum -y install yarn
+    sudo pip install -U pip
+    sudo pip install numpy
+    sudo pip install scipy
+    sudo pip install scikit-learn
+    sudo yum install -y mongodb-org
+  SHELL
+end
+
+
+
