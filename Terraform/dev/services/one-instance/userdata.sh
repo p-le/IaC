@@ -1,16 +1,22 @@
 #!/bin/bash
-sudo yum update -y
-sudo yum install -y wget git
-yum groupinstall -y 'Development Tools'
-sudo wget https://dl.yarnpkg.com/rpm/yarn.repo -O /etc/yum.repos.d/yarn.repo
+yum install -y wget git
+wget https://dl.yarnpkg.com/rpm/yarn.repo -O /etc/yum.repos.d/yarn.repo
 curl --silent --location https://rpm.nodesource.com/setup_7.x | bash -
-sudo yum -y install nodejs yarn
-cat <<EOF >/etc/yum.repos.d/mongodb-org-3.4.repo
-[mongodb-org-3.4]
-name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/x86_64/
-gpgcheck=1
-enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
-EOF
-sudo yum install -y mongodb-org
+yum -y install nodejs yarn
+curl -O https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
+pip install scikit-learn numpy
+/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
+/sbin/mkswap /var/swap.1
+/sbin/swapon /var/swap.1
+pip install scipy
+swapoff /var/swap.1
+rm /var/swap.1
+echo -e "ZONE=\"Asia/Tokyo\"" | sudo tee /etc/sysconfig/clock
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+git clone https://github.com/p-le/ai-api-backend.git
+chmod a+x /ai-api-backend/start.sh
+. /ai-api-backend/start.sh
+yarn install
+HASH_KEY=netmile ./node_modules/.bin/pm2 start index.js
+EXPORT PM2_HOME=/etc/.pm2
