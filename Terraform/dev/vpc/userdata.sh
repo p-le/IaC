@@ -14,3 +14,5 @@ sudo /sbin/swapon /var/swap.1
 sudo pip install scipy
 sudo swapoff /var/swap.1
 sudo rm /var/swap.1
+echo -e "ZONE=\"Asia/Tokyo\"" | sudo tee /etc/sysconfig/clock
+sudo ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
