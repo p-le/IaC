@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
   end
   
   config.vm.provision "shell", inline: <<-SHELL
-    sudo yum install -y gcc-c++ make wget curl
+    sudo yum install -y gcc-c++ make wget curl net-tools
     echo -e "[elasticsearch-5.x]" | sudo tee /etc/yum.repos.d/elasticsearch.repo
     echo -e "name=Elasticsearch repository for 5.x packages" | sudo tee -a /etc/yum.repos.d/elasticsearch.repo
     echo -e "baseurl=https://artifacts.elastic.co/packages/5.x/yum" | sudo tee -a /etc/yum.repos.d/elasticsearch.repo
