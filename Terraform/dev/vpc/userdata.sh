@@ -19,4 +19,3 @@ chmod a+x /ai-api-backend/start.sh
 . /ai-api-backend/start.sh
 yarn install
 HASH_KEY=netmile ./node_modules/.bin/pm2 start index.js
-EXPORT PM2_HOME=/etc/.pm2

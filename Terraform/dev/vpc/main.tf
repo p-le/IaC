@@ -168,7 +168,7 @@ resource "aws_vpc_endpoint_route_table_association" "frontend-s3-2" {
 }
 
 resource "aws_launch_configuration" "api_lc" {
-  name            = "terraform_api_lc"
+  name_prefix   = "terraform-lc-example-"
   image_id        = "ami-5de0433c"
   instance_type   = "t2.micro"
   key_name        = "devops"
