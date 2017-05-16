@@ -152,36 +152,6 @@ resource "aws_iam_instance_profile" "s3" {
   role = "${aws_iam_role.s3.name}"
 }
 
-resource "aws_instance" "backend" {
-  ami = "ami-5de0433c"
-  instance_type = "t2.micro"
-  key_name = "devops"
-  subnet_id = "${aws_subnet.public.id}"
-  user_data       = "${file("userdata.sh")}"
-  iam_instance_profile = "${aws_iam_instance_profile.s3.id}"
-  vpc_security_group_ids = ["${aws_security_group.api_sg.id}"]
-  associate_public_ip_address = true
-  
-  tags {
-    Name = "terraform-api-instance"
-  }
-}
-
-resource "aws_instance" "backend_2" {
-  ami = "ami-5de0433c"
-  instance_type = "t2.micro"
-  key_name = "devops"
-  user_data       = "${file("userdata.sh")}"
-  iam_instance_profile = "${aws_iam_instance_profile.s3.id}"
-  subnet_id = "${aws_subnet.public_2.id}"
-  vpc_security_group_ids = ["${aws_security_group.api_sg.id}"]
-  associate_public_ip_address = true
-  
-  tags {
-    Name = "terraform-api-instance_2"
-  }
-}
-
 resource "aws_vpc_endpoint" "frontend_s3" {
   vpc_id = "${aws_vpc.main.id}"
   service_name = "com.amazonaws.ap-northeast-1.s3"
@@ -195,6 +165,41 @@ resource "aws_vpc_endpoint_route_table_association" "frontend-s3" {
 resource "aws_vpc_endpoint_route_table_association" "frontend-s3-2" {
   vpc_endpoint_id = "${aws_vpc_endpoint.frontend_s3.id}"
   route_table_id = "${aws_route_table.public_2.id}"
+}
+
+resource "aws_launch_configuration" "api_lc" {
+  name            = "terraform_api_lc"
+  image_id        = "ami-5de0433c"
+  instance_type   = "t2.micro"
+  key_name        = "devops"
+
+  user_data       = "${file("userdata.sh")}"
+  iam_instance_profile = "${aws_iam_instance_profile.s3.id}"
+  security_groups = ["${aws_security_group.api_sg.id}"]
+  associate_public_ip_address = true
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "api_asg" {
+  name = "terraform-api-asg"
+
+  min_size = 1
+  max_size = 2
+
+  health_check_grace_period = 300
+  health_check_type         = "ELB"
+
+  launch_configuration  = "${aws_launch_configuration.api_lc.name}"
+
+  load_balancers = ["${aws_elb.external.name}"]
+  vpc_zone_identifier = ["${aws_subnet.public.id}", "${aws_subnet.public_2.id}"]
+  
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_elb" "external" {
@@ -216,7 +221,6 @@ resource "aws_elb" "external" {
   }
 
   security_groups = ["${aws_security_group.api_elb_sg.id}"]
-  instances = ["${aws_instance.backend.id}", "${aws_instance.backend_2.id}"]
   subnets = ["${aws_subnet.public.id}", "${aws_subnet.public_2.id}"]
 
   cross_zone_load_balancing = true
