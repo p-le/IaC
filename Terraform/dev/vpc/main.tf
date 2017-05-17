@@ -197,6 +197,12 @@ resource "aws_autoscaling_group" "api_asg" {
   load_balancers = ["${aws_elb.external.name}"]
   vpc_zone_identifier = ["${aws_subnet.public.id}", "${aws_subnet.public_2.id}"]
   
+  tag {
+    key = "Name"
+    value = "netmile-instance"
+    propagate_at_launch = true
+  }
+  
   lifecycle {
     create_before_destroy = true
   }
